@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BlogMapper">
+
+    <insert id="add">
+        insert into blog
+        <trim suffix=")" prefix="(" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="descr != null">descr,</if>
+            <if test="cover != null">cover,</if>
+            <if test="tags != null">tags,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="date != null">date,</if>
+            <if test="readCount != null">read_count,</if>
+            <if test="categoryId != null">category_id,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="descr != null">#{descr},</if>
+            <if test="cover != null">#{cover},</if>
+            <if test="tags != null">#{tags},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="date != null">#{date},</if>
+            <if test="readCount != null">#{readCount},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        update blog
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="descr != null">
+                descr = #{descr},
+            </if>
+            <if test="cover != null">
+                cover = #{cover},
+            </if>
+            <if test="tags != null">
+                tags = #{tags},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="date != null">
+                date = #{date},
+            </if>
+            <if test="readCount != null">
+                read_count = #{readCount},
+            </if>
+            <if test="categoryId != null">
+            category_id = #{categoryId},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from blog
+        where id=#{id};
+    </delete>
+
+    <select id="selectById" resultType="com.example.entity.Blog">
+        select blog.* ,category.name,user.name from blog
+        left join category on category_id=category.id
+        left join user on user_id=user.id
+        where blog.id=#{id}
+    </select>
+
+    <select id="selectAll" resultType="com.example.entity.Blog">
+        select blog.* ,category.name as categoryName,user.name as userName from blog
+        left join category on category_id=category.id
+        left join user on user_id=user.id
+        <where>
+            <if test="title!=null">and title like concat('%',#{title},'%')</if>
+            <if test="user!=null">and user.name like concat('%',#{user.name},'%')</if>
+            <if test="categoryName!=null">and category.name like concat('%',#{categoryName},'%')</if>
+            <if test="userId!=null">and user_id=#{userId}</if>
+        </where>
+        order by id desc
+    </select>
+
+
+    <select id="selectUserBlogCount" resultType="com.example.entity.Blog">
+        select * from blog where user_id=#{userId}
+    </select>
+
+
+    <select id="selectLike" resultType="com.example.entity.Blog">
+        SELECT blog.*,user.name as userName FROM likes
+        LEFT JOIN blog ON likes.fid=blog.id
+        LEFT JOIN USER ON likes.user_id= user.id
+        WHERE likes.user_id=#{id} AND likes.module='博客'
+    </select>
+
+
+    <select id="selectCollect" resultType="com.example.entity.Blog">
+        SELECT blog.*,user.name as userName FROM collect
+        LEFT JOIN blog ON collect.fid=blog.id
+        LEFT JOIN USER ON collect.user_id= user.id
+        WHERE collect.user_id=#{id} AND collect.module='博客'
+    </select>
+</mapper>
